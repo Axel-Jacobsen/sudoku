@@ -2,20 +2,22 @@
 
 import unittest
 
-from typing import List
+from typing import List, Optional
 
 
 class Sudoku:
     def __init__(self):
-        self.grid = [[None for i in range(9)] for j in range(9)]
+        self.grid: List[List[Optional[int]]] = [
+            [None for i in range(9)] for j in range(9)
+        ]
 
-    def __getitem__(self, i: int, j: int) -> List[int]:
+    def __getitem__(self, i: int, j: int) -> Optional[int]:
         return self.grid[i][j]
 
     def __setitem__(self, i: int, j: int, val: int) -> None:
         self.grid[i][j] = val
 
-    def set_grid(self, grid: List[List[int]]) -> None:
+    def set_grid(self, grid: List[List[Optional[int]]]) -> None:
         self.grid = grid
 
     def check_row(self, row: int) -> bool:
@@ -48,6 +50,9 @@ class Sudoku:
                 if not self.check_square(i, j):
                     return False
         return True
+
+    def get_empty_grid_positions(self) -> List[List[int]]:
+        return [[i, j] for i in range(9) for j in range(9) if self.grid[i][j] is None]
 
 
 class SudokuBoardTest(unittest.TestCase):
@@ -135,7 +140,6 @@ class SudokuBoardTest(unittest.TestCase):
             ]
         )
         self.assertFalse(s.check_valid())
-
 
 
 if __name__ == "__main__":
