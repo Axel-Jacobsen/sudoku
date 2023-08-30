@@ -6,6 +6,8 @@ from sudoku import Sudoku, solve
 
 
 def test_performance_solve_1(N=16):
+    assert N > 0
+
     s = Sudoku()
     s.set_grid(
         [
@@ -35,14 +37,29 @@ def test_performance_solve_1(N=16):
         ]
     )
 
-    t0 = time.perf_counter()
+    ts = []
     for i in range(N):
+        t0 = time.perf_counter()
         solved = solve(s)
-    t1 = time.perf_counter()
+        assert solved == truth, "sudoku not solved correctly in performance test"
+        t1 = time.perf_counter()
+        ts.append(t1 - t0)
+        s.set_grid(
+            [
+                [None, None, 8, None, None, 3, None, None, None],
+                [None, None, 9, None, 6, 2, None, 4, 1],
+                [None, None, 1, 9, None, None, None, None, 2],
+                [None, 5, None, None, 2, None, None, 7, 9],
+                [None, None, 7, None, None, None, 2, None, None],
+                [6, 1, None, None, 4, None, None, 8, None],
+                [2, None, None, None, None, 6, 3, None, None],
+                [1, 9, None, 8, 3, None, 4, None, None],
+                [None, None, None, 2, None, None, 9, None, None],
+            ]
+        )
 
-    assert solved == truth, "sudoku not solved correctly in performance test"
-
-    print(f"performance test 1: {(t1 - t0) / N:.4f} seconds")
+    mean_time = sum(ts) / len(ts)
+    print(f"mean solve duration {mean_time:.5f} seconds")
 
 
 if __name__ == "__main__":
