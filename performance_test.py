@@ -1,9 +1,11 @@
 #! /usr/bin/env python3
 
+import time
+
 from sudoku import Sudoku, solve
 
 
-def test_performance_solve_1():
+def test_performance_solve_1(N=16):
     s = Sudoku()
     s.set_grid(
         [
@@ -32,9 +34,22 @@ def test_performance_solve_1():
             [8, 4, 3, 2, 1, 7, 9, 5, 6],
         ]
     )
-    solved = solve(s)
-    assert solved == truth
+
+    t0 = time.perf_counter()
+    for i in range(N):
+        solved = solve(s)
+    t1 = time.perf_counter()
+
+    assert solved == truth, "sudoku not solved correctly in performance test"
+
+    print(f"performance test 1: {(t1 - t0) / N:.4f} seconds")
 
 
 if __name__ == "__main__":
-    test_performance_solve_1()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--n-iters", type=int, default=16)
+    args = parser.parse_args()
+
+    test_performance_solve_1(args.n_iters)
