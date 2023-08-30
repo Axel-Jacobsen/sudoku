@@ -30,6 +30,14 @@ class Sudoku:
         i, j = pos
         self.grid[i][j] = val
 
+    def __repr__(self) -> str:
+        rows: List[str] = []
+        for row in self.grid:
+            string_els: List[str] = [str(el) if el is not None else "_" for el in row]
+            rows.append(" ".join(string_els))
+        board = "\n".join(rows)
+        return board
+
     def set_grid(self, grid: List[List[Optional[int]]]) -> None:
         self.grid = grid
 
