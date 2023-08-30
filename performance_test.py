@@ -3,7 +3,6 @@
 from sudoku import Sudoku, solve
 
 
-
 def test_performance_solve_1():
     s = Sudoku()
     s.set_grid(
@@ -35,6 +34,7 @@ def test_performance_solve_1():
     )
     solved = solve(s)
     assert solved == truth
+
 
 if __name__ == "__main__":
     test_performance_solve_1()
