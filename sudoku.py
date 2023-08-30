@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
 
-import unittest
 
 from copy import deepcopy
 from typing import List, Tuple, Optional
