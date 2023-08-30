@@ -109,8 +109,9 @@ def solve(board) -> Optional["Sudoku"]:
             return board
 
         if board.check_valid():
-            copy = board.copy()
-            candidate_board = solve(copy)
+            candidate_board = solve(board)
             if candidate_board is not None:
                 return candidate_board
+
+    board[row, col] = None
     return None  # no valid solutions
