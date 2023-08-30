@@ -153,10 +153,33 @@ class SudokuBoardTest(unittest.TestCase):
                 [8, 4, 3, 2, 1, 7, 9, 5, 6],
             ]
         )
-        self.assertTrue(s.check_valid(verbose=True))
+        self.assertTrue(s.check_valid())
         solved = solve(s)
         self.assertTrue(solved.check_valid())
         self.assertEqual(solved, truth)
+
+    def _test_no_solution_1(self):
+        """
+        This should return None, but my solver is too slow
+        right now. I think it has to check something like 3.3*10^72
+        boards.
+        """
+        s = Sudoku()
+        s.set_grid(
+            [
+                [1, 2, 3, None, None, None, None, None, None],
+                [None, None, 4, None, None, None, None, None, None],
+                [None, None, None, None, None, None, 4, None, None],
+                [None, None, None, None, None, None, None, None, None],
+                [None, None, None, None, None, None, None, None, None],
+                [None, None, None, None, None, None, None, None, None],
+                [None, None, None, None, None, None, None, None, None],
+                [None, None, None, None, None, None, None, None, None],
+                [None, None, None, None, None, None, None, None, None],
+            ]
+        )
+        self.assertTrue(s.check_valid())
+        self.assertIsNone(solve(s))
 
     def test_performance_solve_1(self):
         s = Sudoku()
@@ -187,7 +210,7 @@ class SudokuBoardTest(unittest.TestCase):
                 [8, 4, 3, 2, 1, 7, 9, 5, 6],
             ]
         )
-        self.assertTrue(s.check_valid(verbose=True))
+        self.assertTrue(s.check_valid())
         solved = solve(s)
         self.assertTrue(solved.check_valid())
         self.assertEqual(solved, truth)
