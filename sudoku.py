@@ -17,6 +17,12 @@ class Sudoku:
         s.set_grid(deepcopy(self.grid))
         return s
 
+    def __eq__(self, other: object) -> bool:
+        # todo impl Sudoku eq grids, not just Sudoku eq Sudoku
+        if not isinstance(other, type(self)):
+            return False
+        return self.grid == other.grid
+
     def __getitem__(self, i: int, j: int) -> Optional[int]:
         return self.grid[i][j]
 
@@ -207,9 +213,24 @@ class SudokuBoardTest(unittest.TestCase):
                 [9, 1, 2, 3, 4, 5, 6, 7, None],
             ]
         )
+        truth = Sudoku()
+        truth.set_grid(
+            [
+                [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                [4, 5, 6, 7, 8, 9, 1, 2, 3],
+                [7, 8, 9, 1, 2, 3, 4, 5, 6],
+                [2, 3, 4, 5, 6, 7, 8, 9, 1],
+                [5, 6, 7, 8, 9, 1, 2, 3, 4],
+                [8, 9, 1, 2, 3, 4, 5, 6, 7],
+                [3, 4, 5, 6, 7, 8, 9, 1, 2],
+                [6, 7, 8, 9, 1, 2, 3, 4, 5],
+                [9, 1, 2, 3, 4, 5, 6, 7, 8],
+            ]
+        )
         self.assertTrue(s.check_valid())
         solved = solve(s)
         self.assertTrue(solved.check_valid())
+        self.assertEqual(solved, truth)
 
     def test_basic_solve_2(self):
         s = Sudoku()
@@ -226,9 +247,24 @@ class SudokuBoardTest(unittest.TestCase):
                 [8, 4, 3, 2, 1, 7, 9, None, None],
             ]
         )
+        truth = Sudoku()
+        truth.set_grid(
+            [
+                [4, 2, 8, 1, 7, 3, 6, 9, 5],
+                [7, 3, 9, 5, 6, 2, 8, 4, 1],
+                [5, 6, 1, 9, 8, 4, 7, 3, 2],
+                [3, 5, 4, 6, 2, 8, 1, 7, 9],
+                [9, 8, 7, 3, 5, 1, 2, 6, 4],
+                [6, 1, 2, 7, 4, 9, 5, 8, 3],
+                [2, 7, 5, 4, 9, 6, 3, 1, 8],
+                [1, 9, 6, 8, 3, 5, 4, 2, 7],
+                [8, 4, 3, 2, 1, 7, 9, 5, 6],
+            ]
+        )
         self.assertTrue(s.check_valid(verbose=True))
         solved = solve(s)
         self.assertTrue(solved.check_valid())
+        self.assertEqual(solved, truth)
 
 
 if __name__ == "__main__":
