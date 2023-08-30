@@ -69,17 +69,13 @@ class Sudoku:
         els = [self.grid[3 * row + i][3 * col + j] for i in range(3) for j in range(3)]
         return self.check_elements(els)
 
-    def check_valid(self, verbose: bool = False) -> bool:
+    def check_valid(self) -> bool:
         for i in range(9):
             if not self.check_row(i) or not self.check_col(i):
-                if verbose:
-                    print(f"{self.check_row(i)=} or {self.check_col(i)=}")
                 return False
         for i in range(3):
             for j in range(3):
                 if not self.check_square(i, j):
-                    if verbose:
-                        print(f"{self.check_square(i, j)=}")
                     return False
         return True
 
