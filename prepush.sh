@@ -12,4 +12,4 @@ echo "__"
 python3 -m unittest discover .
 echo "__"
 
-python3 performance_test.py --n-iters 16
+python3 performance_test.py --n-iters 32
