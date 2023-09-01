@@ -81,8 +81,42 @@ class Sudoku:
     def check_solved(self) -> bool:
         return self.check_valid() and len(self.get_empty_grid_positions()) == 0
 
-    def get_empty_grid_positions(self) -> List[List[int]]:
-        return [[i, j] for i in range(9) for j in range(9) if self.grid[i][j] is None]
+    def get_empty_grid_positions(self) -> List[Tuple[int, int]]:
+        return [(i, j) for i in range(9) for j in range(9) if self.grid[i][j] is None]
+
+    def find_gimme_at(self, row: int, col: int) -> Optional[int]:
+        """a "gimme" is a spot in the sudoku grid that has exactly 1 possible
+        number, given the current grid
+
+        multiple ways we can determine this (and this will be incomplete):
+            - if an empty square is in a row/col/square with 8 numbers,
+            it is the last number
+            - some other ways that i'll implement later
+        """
+        square_row, square_col = row // 3, col // 3
+        row_numbers = set(self.grid[row]) - {None}
+        col_numbers = set([self.grid[i][col] for i in range(9)]) - {None}
+        square_numbers = set(
+            [
+                self.grid[3 * square_row + i][3 * square_col + j]
+                for i in range(3)
+                for j in range(3)
+            ]
+        ) - {None}
+
+        gimme = set(range(1, 10)) - row_numbers - col_numbers - square_numbers
+        if len(gimme) == 1:
+            return gimme.pop()
+        return None
+
+    def find_gimmes(self) -> List[Tuple[Tuple[int, int], int]]:
+        empty_grid_positions = self.get_empty_grid_positions()
+        gimmes = []
+        for row, col in empty_grid_positions:
+            gimme = self.find_gimme_at(row, col)
+            if gimme is not None:
+                gimmes.append(((row, col), gimme))
+        return gimmes
 
 
 def solve(board) -> Optional["Sudoku"]:
@@ -97,6 +131,11 @@ def solve(board) -> Optional["Sudoku"]:
         if it is invalid, continue
     return false
     """
+    gimmes = board.find_gimmes()
+    if len(gimmes) > 0:
+        for (row, col), gimme in gimmes:
+            board[row, col] = gimme
+
     if board.check_solved():
         return board
 
@@ -113,4 +152,6 @@ def solve(board) -> Optional["Sudoku"]:
                 return candidate_board
 
     board[row, col] = None
+    for (row, col), _ in gimmes:
+        board[row, col] = None
     return None  # no valid solutions
