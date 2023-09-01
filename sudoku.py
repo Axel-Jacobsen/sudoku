@@ -104,13 +104,9 @@ class Sudoku:
             ]
         ) - {None}
 
-        if len(row_numbers) == 8:
-            return (set(range(1, 10)) - row_numbers).pop()
-        if len(col_numbers) == 8:
-            return (set(range(1, 10)) - col_numbers).pop()
-        if len(square_numbers) == 8:
-            return (set(range(1, 10)) - square_numbers).pop()
-
+        gimme = set(range(1, 10)) - row_numbers - col_numbers - square_numbers
+        if len(gimme) == 1:
+            return gimme.pop()
         return None
 
     def find_gimmes(self) -> List[Tuple[Tuple[int, int], int]]:
