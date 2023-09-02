@@ -1,11 +1,15 @@
 #! /usr/bin/env bash
 
+echo "__"
+black .
+
 ruff . --fix
 echo "__"
 mypy .
 
 echo "__"
-black .
+echo "(second black call to clean up after ruff fix)"
+black . --quiet
 
 echo "__"
 
