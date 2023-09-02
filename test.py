@@ -1,13 +1,12 @@
 #! /usr/bin/env python3
 import unittest
 
-from sudoku import Sudoku, solve
+from sudoku import Sudoku
 
 
 class SudokuBoardTest(unittest.TestCase):
     def test_basic_valid_1(self):
-        s = Sudoku()
-        s.set_grid(
+        s = Sudoku(
             [
                 [1, 2, 3, 4, 5, 6, 7, 8, 9],
                 [4, 5, 6, 7, 8, 9, 1, 2, 3],
@@ -23,8 +22,7 @@ class SudokuBoardTest(unittest.TestCase):
         self.assertTrue(s.check_valid())
 
     def test_basic_valid_2(self):
-        s = Sudoku()
-        s.set_grid(
+        s = Sudoku(
             [
                 [4, 2, 8, 1, 7, 3, 6, 9, 5],
                 [7, 3, 9, 5, 6, 2, 8, 4, 1],
@@ -40,8 +38,7 @@ class SudokuBoardTest(unittest.TestCase):
         self.assertTrue(s.check_valid())
 
     def test_basic_invalid_1(self):
-        s = Sudoku()
-        s.set_grid(
+        s = Sudoku(
             [
                 [1, 2, 3, 4, 5, 6, 7, 8, 9],
                 [4, 5, 6, 7, 8, 9, 1, 2, 3],
@@ -57,8 +54,7 @@ class SudokuBoardTest(unittest.TestCase):
         self.assertFalse(s.check_valid())
 
     def test_basic_invalid_2(self):
-        s = Sudoku()
-        s.set_grid(
+        s = Sudoku(
             [
                 [1, 2, 8, 1, 7, 3, 6, 9, 5],
                 [7, 3, 9, 5, 6, 2, 8, 4, 1],
@@ -74,8 +70,7 @@ class SudokuBoardTest(unittest.TestCase):
         self.assertFalse(s.check_valid())
 
     def test_incomplete_1(self):
-        s = Sudoku()
-        s.set_grid(
+        s = Sudoku(
             [
                 [1, 2, 8, 1, 7, 3, 6, 9, 5],
                 [7, 3, 9, 5, 6, 2, 8, 4, 1],
@@ -91,8 +86,7 @@ class SudokuBoardTest(unittest.TestCase):
         self.assertFalse(s.check_valid())
 
     def test_basic_solve_1(self):
-        s = Sudoku()
-        s.set_grid(
+        s = Sudoku(
             [
                 [1, 2, 3, 4, 5, 6, 7, 8, 9],
                 [4, 5, 6, 7, 8, 9, 1, 2, 3],
@@ -105,8 +99,7 @@ class SudokuBoardTest(unittest.TestCase):
                 [9, 1, 2, 3, 4, 5, 6, 7, None],
             ]
         )
-        truth = Sudoku()
-        truth.set_grid(
+        truth = Sudoku(
             [
                 [1, 2, 3, 4, 5, 6, 7, 8, 9],
                 [4, 5, 6, 7, 8, 9, 1, 2, 3],
@@ -120,13 +113,12 @@ class SudokuBoardTest(unittest.TestCase):
             ]
         )
         self.assertTrue(s.check_valid())
-        solved = solve(s)
+        solved = s.solve()
         self.assertTrue(solved.check_valid())
         self.assertEqual(solved, truth)
 
     def test_basic_solve_2(self):
-        s = Sudoku()
-        s.set_grid(
+        s = Sudoku(
             [
                 [None, None, 8, 1, 7, 3, None, None, None],
                 [7, 3, 9, 5, 6, 2, 8, 4, 1],
@@ -139,8 +131,7 @@ class SudokuBoardTest(unittest.TestCase):
                 [8, 4, 3, 2, 1, 7, 9, None, None],
             ]
         )
-        truth = Sudoku()
-        truth.set_grid(
+        truth = Sudoku(
             [
                 [4, 2, 8, 1, 7, 3, 6, 9, 5],
                 [7, 3, 9, 5, 6, 2, 8, 4, 1],
@@ -154,7 +145,7 @@ class SudokuBoardTest(unittest.TestCase):
             ]
         )
         self.assertTrue(s.check_valid())
-        solved = solve(s)
+        solved = s.solve()
         self.assertTrue(solved.check_valid())
         self.assertEqual(solved, truth)
 
@@ -164,8 +155,7 @@ class SudokuBoardTest(unittest.TestCase):
         right now. I think it has to check something like 3.3*10^72
         boards.
         """
-        s = Sudoku()
-        s.set_grid(
+        s = Sudoku(
             [
                 [1, 2, 3, None, None, None, None, None, None],
                 [None, None, 4, None, None, None, None, None, None],
@@ -179,11 +169,10 @@ class SudokuBoardTest(unittest.TestCase):
             ]
         )
         self.assertTrue(s.check_valid())
-        self.assertIsNone(solve(s))
+        self.assertIsNone(s.solve())
 
     def test_performance_solve_1(self):
-        s = Sudoku()
-        s.set_grid(
+        s = Sudoku(
             [
                 [None, None, 8, None, None, 3, None, None, None],
                 [None, None, 9, None, 6, 2, None, 4, 1],
@@ -196,8 +185,7 @@ class SudokuBoardTest(unittest.TestCase):
                 [None, None, None, 2, None, None, 9, None, None],
             ]
         )
-        truth = Sudoku()
-        truth.set_grid(
+        truth = Sudoku(
             [
                 [4, 2, 8, 1, 7, 3, 6, 9, 5],
                 [7, 3, 9, 5, 6, 2, 8, 4, 1],
@@ -211,7 +199,7 @@ class SudokuBoardTest(unittest.TestCase):
             ]
         )
         self.assertTrue(s.check_valid())
-        solved = solve(s)
+        solved = s.solve()
         self.assertTrue(solved.check_valid())
         self.assertEqual(solved, truth)
 

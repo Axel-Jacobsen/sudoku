@@ -2,14 +2,13 @@
 
 import time
 
-from sudoku import Sudoku, solve
+from sudoku import Sudoku
 
 
 def test_performance_solve_1(N=16):
     assert N > 0
 
-    s = Sudoku()
-    s.set_grid(
+    s = Sudoku(
         [
             [None, None, 8, None, None, 3, None, None, None],
             [None, None, 9, None, 6, 2, None, 4, 1],
@@ -22,8 +21,7 @@ def test_performance_solve_1(N=16):
             [None, None, None, 2, None, None, 9, None, None],
         ]
     )
-    truth = Sudoku()
-    truth.set_grid(
+    truth = Sudoku(
         [
             [4, 2, 8, 1, 7, 3, 6, 9, 5],
             [7, 3, 9, 5, 6, 2, 8, 4, 1],
@@ -40,11 +38,11 @@ def test_performance_solve_1(N=16):
     ts = []
     for i in range(N):
         t0 = time.perf_counter()
-        solved = solve(s)
+        solved = s.solve()
         assert solved == truth, "sudoku not solved correctly in performance test"
         t1 = time.perf_counter()
         ts.append(t1 - t0)
-        s.set_grid(
+        s._board.set_grid(
             [
                 [None, None, 8, None, None, 3, None, None, None],
                 [None, None, 9, None, 6, 2, None, 4, 1],

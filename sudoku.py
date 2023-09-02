@@ -1,29 +1,26 @@
 #! /usr/bin/env python3
 
+import numpy as np
 
 from copy import deepcopy
-from typing import List, Tuple, Optional
+from typing import Any, List, Tuple, Union, Optional
 
 
-class Sudoku:
+class Board:
     def __init__(self):
         self.grid: List[List[Optional[int]]] = [
             [None for i in range(9)] for j in range(9)
         ]
 
-    def copy(self) -> "Sudoku":
-        s = Sudoku()
-        s.set_grid(deepcopy(self.grid))
-        return s
-
     def __eq__(self, other: object) -> bool:
-        # todo impl Sudoku eq grids, not just Sudoku eq Sudoku
+        # TODO impl Board eq grids, not just Board eq Board
         if not isinstance(other, type(self)):
             return False
         return self.grid == other.grid
 
-    def __getitem__(self, i: int, j: int) -> Optional[int]:
-        return self.grid[i][j]
+    def __getitem__(self, *args) -> Any:
+        # TODO how do you write and type numpy-style indexing?
+        return self.grid.__getitem__(*args)
 
     def __setitem__(self, pos: Tuple[int, int], val: int) -> None:
         i, j = pos
@@ -37,8 +34,32 @@ class Sudoku:
         board = "\n".join(rows)
         return board
 
+    def copy(self) -> "Board":
+        s = Board()
+        s.set_grid(deepcopy(self.grid))
+        return s
+
     def set_grid(self, grid: List[List[Optional[int]]]) -> None:
         self.grid = grid
+
+
+class Sudoku:
+    def __init__(
+        self, board: Union[List[List[Optional[int]]], np.ndarray, Board]
+    ) -> None:
+        if isinstance(board, Board):
+            self._board = board
+        else:
+            self._board = Board()
+            assert isinstance(
+                board, list
+            ), f"not implemented board for type {type(board)}"
+            self._board.set_grid(board)  # type: ignore
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, type(self)):
+            return False
+        return self._board == other._board
 
     def check_elements(self, els: List[Optional[int]]) -> bool:
         unsolved_adjustment = els.count(None) - 1 if els.count(None) > 1 else 0
@@ -53,19 +74,21 @@ class Sudoku:
         if not (0 <= row < 9):
             raise ValueError(f"row index {row} out of bounds")
 
-        return self.check_elements(self.grid[row])
+        return self.check_elements(self._board[row])
 
     def check_col(self, col: int) -> bool:
         if not (0 <= col < 9):
             raise ValueError(f"column index {col} out of bounds")
 
-        return self.check_elements([self.grid[i][col] for i in range(9)])
+        return self.check_elements([self._board[i][col] for i in range(9)])
 
     def check_square(self, row: int, col: int) -> bool:
         if not (0 <= row < 3 and 0 <= col < 3):
             raise ValueError(f"square index ({row}, {col}) out of bounds")
 
-        els = [self.grid[3 * row + i][3 * col + j] for i in range(3) for j in range(3)]
+        els = [
+            self._board[3 * row + i][3 * col + j] for i in range(3) for j in range(3)
+        ]
         return self.check_elements(els)
 
     def check_valid(self) -> bool:
@@ -82,11 +105,11 @@ class Sudoku:
         return self.check_valid() and len(self.get_empty_grid_positions()) == 0
 
     def get_empty_grid_positions(self) -> List[Tuple[int, int]]:
-        return [(i, j) for i in range(9) for j in range(9) if self.grid[i][j] is None]
+        return [(i, j) for i in range(9) for j in range(9) if self._board[i][j] is None]
 
     def find_gimme_at(self, row: int, col: int) -> Optional[int]:
-        """a "gimme" is a spot in the sudoku grid that has exactly 1 possible
-        number, given the current grid
+        """a "gimme" is a spot in the sudoku _board that has exactly 1 possible
+        number, given the current _board
 
         multiple ways we can determine this (and this will be incomplete):
             - if an empty square is in a row/col/square with 8 numbers,
@@ -94,11 +117,11 @@ class Sudoku:
             - some other ways that i'll implement later
         """
         square_row, square_col = row // 3, col // 3
-        row_numbers = set(self.grid[row]) - {None}
-        col_numbers = set([self.grid[i][col] for i in range(9)]) - {None}
+        row_numbers = set(self._board[row]) - {None}
+        col_numbers = set([self._board[i][col] for i in range(9)]) - {None}
         square_numbers = set(
             [
-                self.grid[3 * square_row + i][3 * square_col + j]
+                self._board[3 * square_row + i][3 * square_col + j]
                 for i in range(3)
                 for j in range(3)
             ]
@@ -110,48 +133,54 @@ class Sudoku:
         return None
 
     def find_gimmes(self) -> List[Tuple[Tuple[int, int], int]]:
-        empty_grid_positions = self.get_empty_grid_positions()
+        empty__board_positions = self.get_empty_grid_positions()
         gimmes = []
-        for row, col in empty_grid_positions:
+        for row, col in empty__board_positions:
             gimme = self.find_gimme_at(row, col)
             if gimme is not None:
                 gimmes.append(((row, col), gimme))
         return gimmes
 
+    def solve(self) -> Optional["Sudoku"]:
+        """
+        There is a nice recursive solution here:
 
-def solve(board) -> Optional["Sudoku"]:
-    """
-    There is a nice recursive solution here
+        pick the first empty slot
+        for numbers in 1..9
+            if it is valid, try solve with new grid
+                if solve with new grid returns a board, return board
+                else, continue
+            if it is invalid, continue
+        return false
 
-    pick the first empty slot
-    for numbers in 1..9
-        if it is valid, try solve with new grid
-            if solve with new grid returns a board, return board
-            else, continue
-        if it is invalid, continue
-    return false
-    """
-    gimmes = board.find_gimmes()
-    if len(gimmes) > 0:
-        for (row, col), gimme in gimmes:
-            board[row, col] = gimme
+        On top of that, you can add stuff to make this brute force faster,
+        such as searching for naked or hidden singles. Beyond that, there
+        is some constraint satisfaction stuff that I don't understand yet.
 
-    if board.check_solved():
-        return board
+        Note: I think the separation between board and solver here is a bit
+        finicky still, and I probably have the wrong abstraction right now
+        """
+        gimmes = self.find_gimmes()
+        if len(gimmes) > 0:
+            for (row, col), gimme in gimmes:
+                self._board[row, col] = gimme
 
-    row, col = board.get_empty_grid_positions().pop()
+        if self.check_solved():
+            return self
 
-    for candidate in range(1, 10):
-        board[row, col] = candidate
-        if board.check_solved():
-            return board
+        row, col = self.get_empty_grid_positions().pop()
 
-        if board.check_valid():
-            candidate_board = solve(board)
-            if candidate_board is not None:
-                return candidate_board
+        for candidate in range(1, 10):
+            self._board[row, col] = candidate
+            if self.check_solved():
+                return self
 
-    board[row, col] = None
-    for (row, col), _ in gimmes:
-        board[row, col] = None
-    return None  # no valid solutions
+            if self.check_valid():
+                candidate_self = self.solve()
+                if candidate_self is not None:
+                    return candidate_self
+
+        self._board[row, col] = None  # type: ignore
+        for (row, col), _ in gimmes:
+            self._board[row, col] = None  # type: ignore
+        return None  # no valid solutions
