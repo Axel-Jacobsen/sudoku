@@ -41,8 +41,8 @@ def test_performance_solve_1(N=16):
     for i in range(N):
         t0 = time.perf_counter()
         solved = solve(s)
-        assert solved == truth, "sudoku not solved correctly in performance test"
         t1 = time.perf_counter()
+        assert solved == truth, "sudoku not solved correctly in performance test"
         ts.append(t1 - t0)
         s.set_grid(
             [
