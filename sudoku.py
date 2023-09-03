@@ -37,8 +37,9 @@ class Sudoku:
         board = "\n".join(rows)
         return board
 
-    def set_grid(self, grid: List[List[Optional[int]]]) -> None:
+    def set_grid(self, grid: List[List[Optional[int]]]) -> "Sudoku":
         self.grid = grid
+        return self
 
     def check_elements(self, els: List[Optional[int]]) -> bool:
         unsolved_adjustment = els.count(None) - 1 if els.count(None) > 1 else 0
